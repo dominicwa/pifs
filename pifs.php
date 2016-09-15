@@ -242,7 +242,7 @@ if ($img_ext == 'jpg') {
 			imagejpeg($img_des, $cache_path . $img_fn, $jpg_quality);
 		}
 	}
-	imagejpeg($img_des, '', $jpg_quality);
+	imagejpeg($img_des, NULL, $jpg_quality);
 }
 
 if ($img_ext == 'png' || $img_ext == 'gif') {
@@ -251,7 +251,7 @@ if ($img_ext == 'png' || $img_ext == 'gif') {
 			imagepng($img_des, $cache_path . $img_fn, $png_quality);
 		}
 	}
-	imagepng($img_des, '', $png_quality);
+	imagepng($img_des, NULL, $png_quality);
 }
 
 // Clearup
