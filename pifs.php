@@ -32,7 +32,7 @@ $img_ext = strtolower(substr(basename($_GET['s']), -3));
 
 // Build the filename.
 
-$img_fn  = str_replace(array('.', '&', '?', '/'), '_', $_GET['s']);
+$img_fn  = str_replace(array('.', '&', '?', '/', ':'), '_', $_GET['s']);
 $img_fn .= '_' . $_GET['w'] . '_' . $_GET['h'] . '_' . $_GET['f'];
 $img_fn .= '_' . $_GET['r'] . '_' . $_GET['c'] . '.' . $img_ext;
 
