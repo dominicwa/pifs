@@ -3,12 +3,12 @@
 
 PHP Image Framing Script (PIFS)
 by Dominic Manley (http://dominicmanley.com/)
-Version: 0.3 (07/01/14)
+Version: 0.4 (07/09/21)
 
 This script resamples images so they fit into a "frame" whilst maintaining
 their aspect ratio. It accepts the following querystring parameters:
 
-s - file path or http location of the image
+s - file path or http location of the image (if $allow_remote)
 w - frame width
 h - frame height
 r - resize width/height only if smaller/bigger ('ws','hs','wb','hb','wshs','wbhs', ...)
@@ -21,10 +21,19 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 // Configure the script.
 
-$cache_save = true;				// highly recommended to speed things up
-$cache_path = 'cache/';				// needs to be writeable (chmod 777)
+$allow_remote = true;				// allow http(s) in the image location (not recommended)
+$cache_save = true;					// highly recommended to speed things up
+$cache_path = 'cache/';				// needs to be writeable by the web server user
 $jpg_quality = 100;					// 0-100, higher the better
 $png_quality = 0;					// 0-9, lower the better (php 5.1.2+ only)
+
+// Exit immediately if no image source provided.
+
+if ($_GET['s'] == '') exit('Error: no source image provided.');
+
+// Exit immediately if image source is remote and $allow_remote is off.
+
+if (stripos($_GET['s'], 'http') !== false && !$allow_remote) exit('Error: remote images not allowed.');
 
 // Get the file extension of the source image.
 
