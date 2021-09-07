@@ -1,13 +1,27 @@
-![PIFS](http://demo.dominicmanley.com/pifs/images/logo.gif)
+![PIFS](docs/images/logo.gif)
 
 PIFS stands for "PHP Image Framing Script". It resamples images so they fit into a frame whilst maintaining their original aspect ratio.
 
 It can turn this:
 
-![Images of different sizes](http://demo.dominicmanley.com/pifs/images/pifs_f.jpg)
+![Images of different sizes](docs/images/pifs_f.jpg)
 
 Into this:
 
-![Images framed using PIFS](http://demo.dominicmanley.com/pifs/images/pifs_t.jpg)
+![Images framed using PIFS](docs/images/pifs_t.jpg)
 
-PIFS has been tested with PHP 5.4. It will probably still work on earlier versions. If not, try reverting e08542f4a93379e1d4987dd8a347a4ea89cf5184.
+You can easily host it on your web server (it's a single script) and then point your HTML image sources through it to resize them on-the-fly, like this:
+
+```
+<img src="path/to/pifs.php?s=path/to/image.png&w=200&h=150" alt="My PIFed image" />
+```
+
+Alternatively, you can use the Docker build and compose files included to spin PIFS up as a micro-service.
+
+**Be careful** when hosting this script on production servers. Make sure the $allow_remote configuration is set to false to prevent anyone referencing your script remotely.
+
+PIFS has been tested with PHP 5.4. It should work on earlier and later versions too.
+
+PIFS uses PHP's bundled [GD library](https://www.php.net/manual/en/book.image.php) for image manipulation. That should be installed/enabled by default under most PHP setups (but check, if you run into issues).
+
+See the script comments for additional documentation.
