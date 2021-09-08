@@ -3,7 +3,7 @@
 
 PHP Image Framing Script (PIFS)
 by Dominic Manley (http://dominicmanley.com/)
-Version: 0.4 (07/09/21)
+Version: 0.5 (08/09/21)
 
 This script resamples images so they fit into a "frame" whilst maintaining
 their aspect ratio. It accepts the following querystring parameters:
@@ -14,6 +14,8 @@ h - frame height
 r - resize width/height only if smaller/bigger ('ws','hs','wb','hb','wshs','wbhs', ...)
 f - fill the frame? (1 or 0)
 c - frame background colour (a *six* character hex value)
+i - ignore/replace cache version (1 or 0)
+e - password for emptying cache
 
 */
 
@@ -21,19 +23,50 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 // Configure the script.
 
-$allow_remote = true;				// allow http(s) in the image location (not recommended)
+$allow_remote = array();			// allowed remote http(s) image locations
 $cache_save = true;					// highly recommended to speed things up
 $cache_path = 'cache/';				// needs to be writeable by the web server user
+$empty_cache_pw = '';				// password for emptying cache using e parameter
 $jpg_quality = 100;					// 0-100, higher the better
 $png_quality = 0;					// 0-9, lower the better (php 5.1.2+ only)
+
+// Override configs with environment vars (if set).
+
+if (isset($_ENV['ALLOW_REMOTE'])) $allow_remote = explode(",", $_ENV['ALLOW_REMOTE']);
+if (isset($_ENV['CACHE_SAVE'])) $cache_save = boolval($_ENV['CACHE_SAVE']);
+if (isset($_ENV['CACHE_PATH'])) $cache_path = $_ENV['CACHE_PATH'];
+if (isset($_ENV['EMPTY_CACHE_PW'])) $empty_cache_pw = $_ENV['EMPTY_CACHE_PW'];
+if (isset($_ENV['JPG_QUALITY'])) $jpg_quality = intval($_ENV['JPG_QUALITY']);
+if (isset($_ENV['PNG_QUALITY'])) $png_quality = intval($_ENV['PNG_QUALITY']);
+
+// Empty cache if correct password provided.
+
+if ($empty_cache_pw != '' && $_GET['e'] == $empty_cache_pw) {
+	$cache_dir = scandir($cache_path);
+	foreach ($cache_dir as $f) {
+		if (in_array(substr($f, -3), array('jpg','png','gif'))) {
+			unlink($cache_path . DIRECTORY_SEPARATOR . $f);
+		}
+	}
+}
 
 // Exit immediately if no image source provided.
 
 if ($_GET['s'] == '') exit('Error: no source image provided.');
 
-// Exit immediately if image source is remote and $allow_remote is off.
+// Exit immediately if image source is remote and not listed in $allow_remote.
 
-if (stripos($_GET['s'], 'http') !== false && !$allow_remote) exit('Error: remote images not allowed.');
+if (sizeof($allow_remote) == 0 && stripos($_GET['s'], 'http') !== false)
+	exit('Error: remote images not allowed.');
+
+if (sizeof($allow_remote) > 0) {
+	$bAllowed = false;
+	foreach ($allow_remote as $l)
+		if (stripos($_GET['s'], $l) === 0)
+			$bAllowed = true;
+	if (!$bAllowed)
+		exit('Error: remote image from that location not allowed.');
+}
 
 // Get the file extension of the source image.
 
@@ -47,7 +80,7 @@ $img_fn .= '_' . $_GET['r'] . '_' . $_GET['c'] . '.' . $img_ext;
 
 // Check for existance in cache and serve instead.
 
-if (file_exists($cache_path . $img_fn)) {
+if (file_exists($cache_path . $img_fn) && $_GET['i'] != 1) {
 	if ($img_ext == 'jpg') {
 		 header('Content-type: image/jpeg');
 	}
@@ -247,7 +280,7 @@ header('Expires: Mon, 26 Jul 2040 05:00:00 GMT');
 
 if ($img_ext == 'jpg') {
 	if ($cache_save == true) {
-		if (!file_exists($cache_path . $img_fn)) {
+		if (!file_exists($cache_path . $img_fn) || $_GET['i'] == 1) {
 			imagejpeg($img_des, $cache_path . $img_fn, $jpg_quality);
 		}
 	}
@@ -256,7 +289,7 @@ if ($img_ext == 'jpg') {
 
 if ($img_ext == 'png' || $img_ext == 'gif') {
 	if ($cache_save == true) {
-		if (!file_exists($cache_path . $img_fn)) {
+		if (!file_exists($cache_path . $img_fn) || $_GET['i'] == 1) {
 			imagepng($img_des, $cache_path . $img_fn, $png_quality);
 		}
 	}

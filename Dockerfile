@@ -9,6 +9,7 @@ RUN apt-get install -y \
     && docker-php-ext-install -j$(nproc) gd
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+RUN sed -i 's/variables_order = "GPCS"/variables_order = "EGPCS"/' "$PHP_INI_DIR/php.ini"
 
 COPY cache/ /var/www/html/cache
 COPY docs/images/logo.gif /var/www/html/logo.gif
