@@ -30,6 +30,15 @@ $empty_cache_pw = '';				// password for emptying cache using e parameter
 $jpg_quality = 100;					// 0-100, higher the better
 $png_quality = 0;					// 0-9, lower the better (php 5.1.2+ only)
 
+// Override configs with environment vars (if set).
+
+if (isset($_ENV['ALLOW_REMOTE'])) $allow_remote = explode(",", $_ENV['ALLOW_REMOTE']);
+if (isset($_ENV['CACHE_SAVE'])) $cache_save = boolval($_ENV['CACHE_SAVE']);
+if (isset($_ENV['CACHE_PATH'])) $cache_path = $_ENV['CACHE_PATH'];
+if (isset($_ENV['EMPTY_CACHE_PW'])) $empty_cache_pw = $_ENV['EMPTY_CACHE_PW'];
+if (isset($_ENV['JPG_QUALITY'])) $jpg_quality = intval($_ENV['JPG_QUALITY']);
+if (isset($_ENV['PNG_QUALITY'])) $png_quality = intval($_ENV['PNG_QUALITY']);
+
 // Empty cache if correct password provided.
 
 if ($empty_cache_pw != '' && $_GET['e'] == $empty_cache_pw) {
