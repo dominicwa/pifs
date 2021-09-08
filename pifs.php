@@ -15,6 +15,7 @@ r - resize width/height only if smaller/bigger ('ws','hs','wb','hb','wshs','wbhs
 f - fill the frame? (1 or 0)
 c - frame background colour (a *six* character hex value)
 i - ignore/replace cache version (1 or 0)
+e - password for emptying cache
 
 */
 
@@ -25,8 +26,20 @@ error_reporting(E_ALL ^ E_NOTICE);
 $allow_remote = array();			// allowed remote http(s) image locations
 $cache_save = true;					// highly recommended to speed things up
 $cache_path = 'cache/';				// needs to be writeable by the web server user
+$empty_cache_pw = '';				// password for emptying cache using e parameter
 $jpg_quality = 100;					// 0-100, higher the better
 $png_quality = 0;					// 0-9, lower the better (php 5.1.2+ only)
+
+// Empty cache if correct password provided.
+
+if ($empty_cache_pw != '' && $_GET['e'] == $empty_cache_pw) {
+	$cache_dir = scandir($cache_path);
+	foreach ($cache_dir as $f) {
+		if (in_array(substr($f, -3), array('jpg','png','gif'))) {
+			unlink($cache_path . DIRECTORY_SEPARATOR . $f);
+		}
+	}
+}
 
 // Exit immediately if no image source provided.
 
