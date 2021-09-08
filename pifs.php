@@ -21,7 +21,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 // Configure the script.
 
-$allow_remote = true;				// allow http(s) in the image location (not recommended)
+$allow_remote = array();			// allowed remote http(s) image locations
 $cache_save = true;					// highly recommended to speed things up
 $cache_path = 'cache/';				// needs to be writeable by the web server user
 $jpg_quality = 100;					// 0-100, higher the better
@@ -31,9 +31,19 @@ $png_quality = 0;					// 0-9, lower the better (php 5.1.2+ only)
 
 if ($_GET['s'] == '') exit('Error: no source image provided.');
 
-// Exit immediately if image source is remote and $allow_remote is off.
+// Exit immediately if image source is remote and not listed in $allow_remote.
 
-if (stripos($_GET['s'], 'http') !== false && !$allow_remote) exit('Error: remote images not allowed.');
+if (sizeof($allow_remote) == 0 && stripos($_GET['s'], 'http') !== false)
+	exit('Error: remote images not allowed.');
+
+if (sizeof($allow_remote) > 0) {
+	$bAllowed = false;
+	foreach ($allow_remote as $l)
+		if (stripos($_GET['s'], $l) === 0)
+			$bAllowed = true;
+	if (!$bAllowed)
+		exit('Error: remote image from that location not allowed.');
+}
 
 // Get the file extension of the source image.
 
