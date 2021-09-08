@@ -14,6 +14,7 @@ h - frame height
 r - resize width/height only if smaller/bigger ('ws','hs','wb','hb','wshs','wbhs', ...)
 f - fill the frame? (1 or 0)
 c - frame background colour (a *six* character hex value)
+i - ignore/replace cache version (1 or 0)
 
 */
 
@@ -57,7 +58,7 @@ $img_fn .= '_' . $_GET['r'] . '_' . $_GET['c'] . '.' . $img_ext;
 
 // Check for existance in cache and serve instead.
 
-if (file_exists($cache_path . $img_fn)) {
+if (file_exists($cache_path . $img_fn) && $_GET['i'] != 1) {
 	if ($img_ext == 'jpg') {
 		 header('Content-type: image/jpeg');
 	}
@@ -257,7 +258,7 @@ header('Expires: Mon, 26 Jul 2040 05:00:00 GMT');
 
 if ($img_ext == 'jpg') {
 	if ($cache_save == true) {
-		if (!file_exists($cache_path . $img_fn)) {
+		if (!file_exists($cache_path . $img_fn) || $_GET['i'] == 1) {
 			imagejpeg($img_des, $cache_path . $img_fn, $jpg_quality);
 		}
 	}
@@ -266,7 +267,7 @@ if ($img_ext == 'jpg') {
 
 if ($img_ext == 'png' || $img_ext == 'gif') {
 	if ($cache_save == true) {
-		if (!file_exists($cache_path . $img_fn)) {
+		if (!file_exists($cache_path . $img_fn) || $_GET['i'] == 1) {
 			imagepng($img_des, $cache_path . $img_fn, $png_quality);
 		}
 	}
