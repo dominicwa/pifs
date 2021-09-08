@@ -3,7 +3,7 @@
 
 PHP Image Framing Script (PIFS)
 by Dominic Manley (http://dominicmanley.com/)
-Version: 0.4 (07/09/21)
+Version: 0.5 (08/09/21)
 
 This script resamples images so they fit into a "frame" whilst maintaining
 their aspect ratio. It accepts the following querystring parameters:
