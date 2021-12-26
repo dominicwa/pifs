@@ -17,7 +17,7 @@ services:
       - 'PHP_ERROR_REPORTING=E_ALL'
       - 'PHP_DISPLAY_ERRORS=On'
       - 'PHP_VARIABLES_ORDER=EGPCS'
-    #  - 'ALLOW_REMOTE=http://,https://'
+      - 'ALLOW_REMOTE=http://,https://'
     #  - 'CACHE_SAVE=1'
     #  - 'CACHE_PATH=cache/'
     #  - 'EMPTY_CACHE_PW=password'

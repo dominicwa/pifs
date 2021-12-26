@@ -4,4 +4,5 @@
 Thumbs.db
 
 **/.git
-**/src/vendor
+**/cache/*
+!**/cache/.htaccess

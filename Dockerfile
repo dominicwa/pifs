@@ -22,8 +22,6 @@ RUN apk update && apk upgrade && apk add \
         openntpd \
         nano
 
-#RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
-
 RUN apk add \
         php7-ftp \
         php7-mcrypt \
@@ -77,12 +75,10 @@ RUN sed -i "s/#LoadModule expires_module/LoadModule\ expires_module/" /etc/apach
 
 RUN mkdir /app && mkdir /app/public && chown -R apache:apache /app && chmod -R 755 /app && mkdir bootstrap
 
-#COPY composer.json /app/public/composer.json
 COPY cache/ /app/public/cache
 COPY docs/images/logo.gif /app/public/logo.gif
 COPY pifs.php /app/public/index.php
 RUN chown -R apache:apache /app/public && chmod -R 755 /app/public
-#RUN cd /app/public && composer install && cd /
 
 COPY docker-entrypoint.sh /bootstrap
 
