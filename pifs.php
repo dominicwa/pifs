@@ -1,14 +1,14 @@
 <?php
+
 /*
 
 PHP Image Framing Script (PIFS)
 by Dominic Manley (http://dominicmanley.com/)
-Version: 0.51 (10/11/21)
 
-This script resamples images so they fit into a "frame" whilst maintaining
-their aspect ratio. It accepts the following querystring parameters:
+This script resamples images so they fit into a "frame" whilst maintaining their aspect ratio. It accepts the following querystring parameters:
 
 s - file path or http location of the image (if $allow_remote)
+b - location s (above) is base64 encoded (1 or 0) using https://github.com/firebase/php-jwt/blob/feb0e820b8436873675fd3aca04f3728eb2185cb/src/JWT.php#L350
 w - frame width
 h - frame height
 r - resize width/height only if smaller/bigger ('ws','hs','wb','hb','wshs','wbhs', ...)
@@ -53,6 +53,20 @@ if ($empty_cache_pw != '' && $_GET['e'] == $empty_cache_pw) {
 // Exit immediately if no image source provided.
 
 if ($_GET['s'] == '') exit('Error: no source image provided.');
+
+// Decode URL if flagged as base64 encoded.
+
+// https://github.com/firebase/php-jwt/blob/feb0e820b8436873675fd3aca04f3728eb2185cb/src/JWT.php#L333
+function urlsafeB64Decode($input) {
+	$remainder = \strlen($input) % 4;
+	if ($remainder) {
+		$padlen = 4 - $remainder;
+		$input .= \str_repeat('=', $padlen);
+	}
+	return \base64_decode(\strtr($input, '-_', '+/'));
+}
+
+if ($_GET['b'] == '1') $_GET['s'] = urlsafeB64Decode($_GET['s']);
 
 // Exit immediately if image source is remote and not listed in $allow_remote.
 
