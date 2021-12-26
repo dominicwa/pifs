@@ -70,11 +70,22 @@ if (sizeof($allow_remote) > 0) {
 
 // Get the file extension of the source image.
 
-$img_ext = strtolower(substr(basename($_GET['s']), -3));
+$img_ext = '';
+$headers = get_headers($_GET['s']);
+foreach ($headers as $header) {
+	if (stristr($header, 'Content-Type') !== FALSE) {
+		if (stristr($header, 'jpeg') !== FALSE || stristr($header, 'jpg') !== FALSE) $img_ext = 'jpg';
+		if (stristr($header, 'png') !== FALSE) $img_ext = 'png';
+		if (stristr($header, 'gif') !== FALSE) $img_ext = 'gif';
+	}
+}
+
+if ($img_ext == '')
+	exit('Error: could not identify image type.');
 
 // Build the filename.
 
-$img_fn  = str_replace(array('.', '&', '?', '/', ':'), '_', $_GET['s']);
+$img_fn  = preg_replace("/[^A-Za-z0-9 ]/", '_', $_GET['s']);
 $img_fn .= '_' . $_GET['w'] . '_' . $_GET['h'] . '_' . $_GET['f'];
 $img_fn .= '_' . $_GET['r'] . '_' . $_GET['c'] . '.' . $img_ext;
 
